@@ -1,0 +1,18 @@
+# Remote camera agent: run on a machine in the SAME network as the cameras, when that network
+# is not the one your Veyra server is on (e.g. a summer house). Build from the repository root:
+#   docker build -f apps/camera-agent/Dockerfile -t veyra-agent .
+#   docker compose -f apps/camera-agent/docker-compose.example.yml up -d
+# No inbound ports are needed: the agent only makes outbound requests to VEYRA_API_URL.
+services:
+  veyra-agent:
+    image: veyra-agent
+    restart: unless-stopped
+    environment:
+      VEYRA_API_URL: https://veyra.example.com
+      # Only needed for the first start; the credential is then kept in the volume.
+      VEYRA_ENROLLMENT_TOKEN: ve_xxxxxxxx
+      # VEYRA_ALLOWED_HOSTS: 192.168.1.0/24
+    volumes:
+      - agent-data:/data
+volumes:
+  agent-data:

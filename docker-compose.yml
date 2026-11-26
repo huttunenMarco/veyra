@@ -1,0 +1,52 @@
+# Veyra – run on your home server:
+#   docker compose up -d
+# then open http://<server-ip>:8080
+#
+# Everything (database, queue, snapshots) is stored in Docker volumes on this machine.
+services:
+  veyra:
+    build: .
+    image: veyra:local
+    restart: unless-stopped
+    ports:
+      - '8080:8080'
+    environment:
+      DATABASE_URL: postgres://veyra:veyra@postgres:5432/veyra
+      REDIS_URL: redis://redis:6379
+      TZ: Europe/Stockholm
+      # Address you use to open Veyra; used for links in notifications.
+      PUBLIC_URL: ${PUBLIC_URL:-http://localhost:8080}
+      # Optional. Generated automatically into the data volume if empty.
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-}
+    volumes:
+      - veyradata:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: veyra
+      POSTGRES_PASSWORD: veyra
+      POSTGRES_DB: veyra
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U veyra']
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redisdata:/data
+
+volumes:
+  veyradata:
+  pgdata:
+  redisdata:

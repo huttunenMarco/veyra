@@ -1,0 +1,15 @@
+node_modules
+dist
+.env
+.env.local
+data/
+*.log
+.veyra-agent*.json
+playwright-report
+test-results
+.DS_Store
+test-frame.jpg
+
+# Personal drafts
+linkedin/
+linkedin-post.txt

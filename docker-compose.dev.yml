@@ -1,0 +1,27 @@
+# Development only: Postgres and Redis for `pnpm dev`.
+#   pnpm dev:db
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: veyra
+      POSTGRES_PASSWORD: veyra
+      POSTGRES_DB: veyra
+    ports:
+      - '5434:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U veyra']
+      interval: 5s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6381:6379'
+    volumes:
+      - redisdata:/data
+
+volumes:
+  pgdata:
+  redisdata:

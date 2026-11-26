@@ -1,0 +1,1 @@
+ALTER TABLE "cameras" ADD COLUMN "auto_capture" boolean DEFAULT true NOT NULL;
